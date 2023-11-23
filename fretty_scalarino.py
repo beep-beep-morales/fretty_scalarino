@@ -212,6 +212,7 @@ class FrettyScalarino(inkex.EffectExtension):
             y1 = self.page_margin_uu
             if count == self.columns:
                 draw_bottom = True
+                y2 = self.final_fret_position_uu
             else:
                 y2 = self.document_height_uu - self.page_margin_uu
 
