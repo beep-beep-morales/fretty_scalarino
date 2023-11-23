@@ -72,7 +72,7 @@ class FrettyScalarino(inkex.EffectExtension):
             self.nut_offset_inches = self.nut_length_inches
         else:
             self.nut_offset_inches = self.nut_length_inches / 2
-        
+
         self.fret_markers = self.options.fret_markers
 
         self.document_width = self.svg.viewport_width
@@ -227,12 +227,13 @@ class FrettyScalarino(inkex.EffectExtension):
         )
         x = x_left + self.template_width_uu / 2
         y = distance
-        if fret in [12, 24]:
-            marker_offset = self.template_width_uu / 4
-            self.draw_cross(x - marker_offset, y)
-            self.draw_cross(x + marker_offset, y)
-        else:
-            self.draw_cross(x, y)
+        if distance > self.page_margin_uu:
+            if fret in [12, 24]:
+                marker_offset = self.template_width_uu / 4
+                self.draw_cross(x - marker_offset, y)
+                self.draw_cross(x + marker_offset, y)
+            else:
+                self.draw_cross(x, y)
 
     def draw_nut(self):
         """Draw the guitar nut using the nut length specified in the UI. Inkscape draws lines centered on their cooridinates,
