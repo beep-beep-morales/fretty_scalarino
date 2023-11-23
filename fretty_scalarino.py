@@ -35,6 +35,7 @@ class FrettyScalarino(inkex.EffectExtension):
         pars.add_argument("--fret_slot_width", type=float, default="0.023in")
         pars.add_argument("--nut_length", type=float, default="0.20")
         pars.add_argument("--nut_position", default="leading_edge")
+        pars.add_argument("--fret_markers", default="false")
 
     def assign_variables(self):
         """Assigns the variables parsed from the INX file to instance variables"""
