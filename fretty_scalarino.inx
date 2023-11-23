@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Fretty Scalarino</name>
+  <id>org.inkscape.fretty_scalarino</id>
+
+    <param name="template_width" type="float" precision="2" min="0" _gui-text="Width of template (inches): ">1.50</param>
+    <param name="page_margin" type="float" precision="2" min="0" _gui-text="Page margin (inches): ">0.50</param>
+    <param name="scale_length"  type="float" precision="2" min="0" max="40" _gui-text="Scale length (inches):">25.00</param>
+    <param name="number_of_frets" type="int" min="1" max="36" _gui-text="Number of frets:">22</param>
+    <param name="fret_slot_width"  type="float" precision="3" min="0" _gui-text="Fret slot width (inches):">0.023</param>
+    <param name="nut_length" type="float" precision="2" min="0" _gui-text="Length of nut (inches):">0.20</param>
+    <param name="nut_position" type="optiongroup" appearance="combo" gui-text="Nut position:">
+        <option value="leading_edge">Leading edge</option>
+        <option value="center">Center</option>
+    </param>
+
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+      <submenu name="Fretty Scalarino"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command location="inx" interpreter="python">fretty_scalarino.py</command>
+  </script>
+</inkscape-extension>
