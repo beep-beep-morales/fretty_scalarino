@@ -10,4 +10,5 @@ Todo:
 1. Verify accuracy of fret calculations and placement.
 2. Add an option to extend the template to the bridge.
 3. Add text to the generated fretboard scale template to specify scale.
-4. Cool logo?
+4. Fret markers?
+5. Cool logo?
