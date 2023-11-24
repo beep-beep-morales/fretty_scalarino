@@ -35,6 +35,7 @@ class FrettyScalarino(inkex.EffectExtension):
         pars.add_argument("--fret_slot_width", type=float, default="0.023in")
         pars.add_argument("--nut_length", type=float, default="0.20")
         pars.add_argument("--nut_position", default="leading_edge")
+        pars.add_argument("--fret_markers", default="true")
 
     def assign_variables(self):
         """Assigns the variables parsed from the INX file to instance variables"""
@@ -72,6 +73,8 @@ class FrettyScalarino(inkex.EffectExtension):
         else:
             self.nut_offset_inches = self.nut_length_inches / 2
 
+        self.fret_markers = self.options.fret_markers
+
         self.document_width = self.svg.viewport_width
         self.document_width_uu = self.current_layer.unittouu(self.document_width)
         self.docuemnt_width_inches = inkex.units.convert_unit(
@@ -91,7 +94,7 @@ class FrettyScalarino(inkex.EffectExtension):
         element = inkex.TextElement(x=str(x_uu), y=str(y_uu))
         element.text = str(text)
         element.style = {
-            "font-size": self.svg.unittouu("12pt"),
+            "font-size": self.svg.unittouu("8pt"),
             "fill-opacity": "1.0",
             "stroke": "none",
             "font-weight": "bold",
@@ -121,6 +124,9 @@ class FrettyScalarino(inkex.EffectExtension):
                 (self.fret_distance_from_nut(fret))
                 - (self.fret_distance_from_nut(fret - 1)),
                 3,
+            )
+            fret_distance_from_previous_fret_uu = self.current_layer.unittouu(
+                str(fret_distance_from_previous_fret_inches) + "in"
             )
             fret_distance_from_page_top_inches = round(
                 fret_distance_from_page_top_inches
@@ -159,6 +165,13 @@ class FrettyScalarino(inkex.EffectExtension):
 
             self.draw_fret(fret, self.columns, fret_distance_from_page_top_uu)
 
+            if self.fret_markers == "true":
+                if fret in [3, 5, 7, 9, 12, 15, 17, 19, 21, 24]:
+                    marker_distance = fret_distance_from_page_top_uu - (
+                        fret_distance_from_previous_fret_uu / 2
+                    )
+                    self.draw_fret_marker(fret, self.columns, marker_distance)
+
             # Store the position of the final fret to make drawing the borders of the fretboard easier
             if fret == fret_number:
                 self.final_fret_position_uu = fret_distance_from_page_top_uu
@@ -186,6 +199,41 @@ class FrettyScalarino(inkex.EffectExtension):
                 f"Fret #{fret}",
             )
         )
+
+    def draw_cross(self, x, y):
+        horizontal_line = self.current_layer.add(
+            inkex.Line.new(
+                f"{x-2},{y}",
+                f"{x+2},{y}",
+            )
+        )
+        horizontal_line.style["stroke"] = "#000000"
+        horizontal_line.style["stroke-width"] = f"{self.fret_slot_width}"
+
+        vertical_line = self.current_layer.add(
+            inkex.Line.new(
+                f"{x},{y-2}",
+                f"{x},{y+2}",
+            )
+        )
+        vertical_line.style["stroke"] = "#000000"
+        vertical_line.style["stroke-width"] = f"{self.fret_slot_width}"
+
+    def draw_fret_marker(self, fret, column, distance):
+        x_left = (
+            column * self.template_width_uu
+            + self.page_margin_uu
+            + column * self.current_layer.unittouu("0.4 in")
+        )
+        x = x_left + self.template_width_uu / 2
+        y = distance
+        if distance > self.page_margin_uu:
+            if fret in [12, 24]:
+                marker_offset = self.template_width_uu / 4
+                self.draw_cross(x - marker_offset, y)
+                self.draw_cross(x + marker_offset, y)
+            else:
+                self.draw_cross(x, y)
 
     def draw_nut(self):
         """Draw the guitar nut using the nut length specified in the UI. Inkscape draws lines centered on their cooridinates,

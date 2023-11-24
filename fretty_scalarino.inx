@@ -13,6 +13,7 @@
         <option value="leading_edge">Leading edge</option>
         <option value="center">Center</option>
     </param>
+    <param name="fret_markers" type="bool" _gui-text="Include fret markers">true</param>
 
   <effect>
     <object-type>all</object-type>
