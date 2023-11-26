@@ -56,8 +56,10 @@ class FrettyScalarino(inkex.EffectExtension):
             str(self.scale_length_inches) + "in"
         )
 
-        self.fret_slot_width = str(self.options.fret_slot_width) + "in"
-        self.fret_slot_width = self.current_layer.unittouu(self.fret_slot_width)
+        self.fret_slot_width_inches = str(self.options.fret_slot_width) + "in"
+        self.fret_slot_width_uu = self.current_layer.unittouu(
+            self.fret_slot_width_inches
+        )
 
         self.number_of_frets = self.options.number_of_frets
 
@@ -148,10 +150,6 @@ class FrettyScalarino(inkex.EffectExtension):
                 pass
                 # fret_distance_from_page_top = fret_distance_from_page_top + fret_distance_from_previous_fret
 
-            distance_from_limit = round(
-                (limit_inches - (fret_distance_from_page_top_inches % limit_inches)), 3
-            )
-
             if fret_distance_from_page_top_inches > limit_inches:
                 offset = offset + limit_inches
                 fret_list.insert(0, fret)
@@ -192,7 +190,7 @@ class FrettyScalarino(inkex.EffectExtension):
             )
         )
         fret_line.style["stroke"] = "#000000"
-        fret_line.style["stroke-width"] = f"{self.fret_slot_width}"
+        fret_line.style["stroke-width"] = f"{self.fret_slot_width_uu}"
         self.current_layer.add(
             self.add_text(
                 x1 + self.template_width_uu / 2,
@@ -210,7 +208,7 @@ class FrettyScalarino(inkex.EffectExtension):
             )
         )
         horizontal_line.style["stroke"] = "#000000"
-        horizontal_line.style["stroke-width"] = f"{self.fret_slot_width}"
+        horizontal_line.style["stroke-width"] = f"{self.fret_slot_width_uu}"
 
         vertical_line = self.current_layer.add(
             inkex.Line.new(
@@ -219,7 +217,7 @@ class FrettyScalarino(inkex.EffectExtension):
             )
         )
         vertical_line.style["stroke"] = "#000000"
-        vertical_line.style["stroke-width"] = f"{self.fret_slot_width}"
+        vertical_line.style["stroke-width"] = f"{self.fret_slot_width_uu}"
 
     def draw_fret_marker(self, fret, column, distance):
         x_left = (
@@ -270,7 +268,6 @@ class FrettyScalarino(inkex.EffectExtension):
             x2 = x1 + self.template_width_uu
             y1 = self.page_margin_uu
             if count == self.columns:
-                draw_bottom = True
                 y2 = self.final_fret_position_uu
             else:
                 y2 = self.document_height_uu - self.page_margin_uu
@@ -278,32 +275,24 @@ class FrettyScalarino(inkex.EffectExtension):
             fretboard_border_left = self.current_layer.add(
                 inkex.Line.new(
                     f"{x1},{y1}",
-                    f"{x1},{y2}",
+                    f"{x1},{y2 + self.fret_slot_width_uu/2}",
                 )
             )
             fretboard_border_left.style["stroke"] = "#000000"
-            fretboard_border_left.style["stroke-width"] = f"{self.fret_slot_width}"
+            fretboard_border_left.style[
+                "stroke-width"
+            ] = f"{self.fret_slot_width_uu * 2}"
 
             fretboard_border_right = self.current_layer.add(
                 inkex.Line.new(
                     f"{x2},{y1}",
-                    f"{x2},{y2}",
+                    f"{x2},{y2 + self.fret_slot_width_uu/2}",
                 )
             )
             fretboard_border_right.style["stroke"] = "#000000"
-            fretboard_border_right.style["stroke-width"] = f"{self.fret_slot_width}"
-
-            if draw_bottom == True:
-                fretboard_border_bottom = self.current_layer.add(
-                    inkex.Line.new(
-                        f"{x1},{y2}",
-                        f"{x2},{y2}",
-                    )
-                )
-                fretboard_border_bottom.style["stroke"] = "#000000"
-                fretboard_border_bottom.style[
-                    "stroke-width"
-                ] = f"{self.fret_slot_width}"
+            fretboard_border_right.style[
+                "stroke-width"
+            ] = f"{self.fret_slot_width_uu * 2}"
 
             count = count + 1
 
@@ -317,7 +306,7 @@ class FrettyScalarino(inkex.EffectExtension):
             )
         )
         page_border.style["stroke"] = "#c8c8c8"
-        page_border.style["stroke-width"] = f"{self.fret_slot_width}"
+        page_border.style["stroke-width"] = f"{self.fret_slot_width_uu}"
         page_border.style["fill"] = "none"
 
     def effect(self):
