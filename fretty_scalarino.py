@@ -89,16 +89,17 @@ class FrettyScalarino(inkex.EffectExtension):
         )
         self.document_height_usable = self.document_height_uu - self.page_margin_uu * 2
 
-    def add_text(self, x_uu, y_uu, text):
+    def add_text(self, x_uu, y_uu, font_size, text):
         """Add a text label at the given x,y location."""
         element = inkex.TextElement(x=str(x_uu), y=str(y_uu))
         element.text = str(text)
         element.style = {
-            "font-size": self.svg.unittouu("8pt"),
+            "font-size": self.svg.unittouu(f"{font_size}pt"),
             "fill-opacity": "1.0",
             "stroke": "none",
             "font-weight": "bold",
             "font-style": "normal",
+            "text-anchor": "middle",
         }
         return element
 
@@ -194,8 +195,9 @@ class FrettyScalarino(inkex.EffectExtension):
         fret_line.style["stroke-width"] = f"{self.fret_slot_width}"
         self.current_layer.add(
             self.add_text(
-                x1 + self.template_width_uu / 4,
-                distance - 1,
+                x1 + self.template_width_uu / 2,
+                distance - 0.7,
+                8,
                 f"Fret #{fret}",
             )
         )
@@ -246,6 +248,15 @@ class FrettyScalarino(inkex.EffectExtension):
         )
         nut_line.style["stroke"] = "#000000"
         nut_line.style["stroke-width"] = f"{self.nut_length_uu}"
+
+        self.current_layer.add(
+            self.add_text(
+                self.page_margin_uu + self.template_width_uu / 2,
+                self.nut_position_uu + 6,
+                10,
+                f'Scale: {self.scale_length_inches}"',
+            )
+        )
 
     def draw_template_border(self):
         count = 0
@@ -312,8 +323,8 @@ class FrettyScalarino(inkex.EffectExtension):
     def effect(self):
         """This functinon is executed automatically when the extension is applied"""
         self.assign_variables()
-        self.draw_nut()
         self.draw_page_border()
+        self.draw_nut()
         self.sort_and_draw_frets(self.number_of_frets)
         self.draw_template_border()
 
