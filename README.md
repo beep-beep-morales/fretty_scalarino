@@ -7,7 +7,7 @@ Basic functionality exists but is yet untested and unverified.
 Currently all the units available to the user are in inches. Not sure if it makes sense to provide a metric option.
 
 Todo:
+
 1. Verify accuracy of fret calculations and placement.
-2. Add text to the generated fretboard scale template to specify scale?
-3. Cool logo?
-4. Designate nut position with markers?
+2. Cool logo?
+3. Designate nut position with markers?
