@@ -19,7 +19,7 @@
 #
 
 """
-A simple utility to draw fretboard templates for Cigar Box Guitars
+A simple utility to draw fretboard templates, intended for Cigar Box Guitars
 """
 
 import inkex
@@ -74,6 +74,7 @@ class FrettyScalarino(inkex.EffectExtension):
             self.nut_offset_inches = self.nut_length_inches
         else:
             self.nut_offset_inches = self.nut_length_inches / 2
+        self.nut_offset_uu = self.current_layer.unittouu(str(self.nut_offset_inches) + "in")
 
         self.fret_markers = self.options.fret_markers
 
@@ -256,6 +257,21 @@ class FrettyScalarino(inkex.EffectExtension):
             )
         )
 
+    def draw_nut_indicator(self):
+        """The nut indicator points to where the string takoff is. For leading edge nuts the string
+        takeoff is at the bottom, but for 'center' nut types, like a machine bolt, the strings take off
+        from the middle of the nut"""
+        line_length = self.current_layer.unittouu("0.2 in")
+        line_position = self.page_margin_uu + self.nut_offset_uu
+        nut_indicator_line = self.current_layer.add(
+            inkex.Line.new(
+                f"{self.page_margin_uu+self.template_width_uu + line_length},{line_position}",
+                f"{self.page_margin_uu+self.template_width_uu},{line_position}",
+            )
+        )
+        nut_indicator_line.style["stroke"] = "#000000"
+        nut_indicator_line.style["stroke-width"] = f"{self.fret_slot_width_uu}"
+
     def draw_template_border(self):
         count = 0
         draw_bottom = False
@@ -314,6 +330,7 @@ class FrettyScalarino(inkex.EffectExtension):
         self.assign_variables()
         self.draw_page_border()
         self.draw_nut()
+        self.draw_nut_indicator()
         self.sort_and_draw_frets(self.number_of_frets)
         self.draw_template_border()
 
