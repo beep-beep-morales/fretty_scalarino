@@ -74,7 +74,9 @@ class FrettyScalarino(inkex.EffectExtension):
             self.nut_offset_inches = self.nut_length_inches
         else:
             self.nut_offset_inches = self.nut_length_inches / 2
-        self.nut_offset_uu = self.current_layer.unittouu(str(self.nut_offset_inches) + "in")
+        self.nut_offset_uu = self.current_layer.unittouu(
+            str(self.nut_offset_inches) + "in"
+        )
 
         self.fret_markers = self.options.fret_markers
 
@@ -91,6 +93,21 @@ class FrettyScalarino(inkex.EffectExtension):
             str(self.document_height), "in"
         )
         self.document_height_usable = self.document_height_uu - self.page_margin_uu * 2
+
+    def add_marker(self, name):
+        """Create a marker and add it to the 'defs' of the svg
+        This function is based on code from 'dimensions.py"""
+        marker = inkex.Marker()
+        marker.set("id", name)
+        marker.set("orient", "auto")
+        marker.set("refX", "2.0")
+        marker.set("refY", "1.5")
+        marker.set("style", "overflow:visible")
+        marker.set("inkscape:stockid", name)
+        self.svg.defs.append(marker)
+
+        arrow = inkex.PathElement(d="M 0.0,0.0 L 4.0,1.5 L 0.0,3.0")
+        marker.append(arrow)
 
     def add_text(self, x_uu, y_uu, font_size, text):
         """Add a text label at the given x,y location."""
@@ -258,19 +275,22 @@ class FrettyScalarino(inkex.EffectExtension):
         )
 
     def draw_nut_indicator(self):
-        """The nut indicator points to where the string takoff is. For leading edge nuts the string
-        takeoff is at the bottom, but for 'center' nut types, like a machine bolt, the strings take off
-        from the middle of the nut"""
-        line_length = self.current_layer.unittouu("0.2 in")
+        """The nut indicator is an arrow that points to where the string takoff is. For leading edge nuts the string
+        takeoff is at the bottom, but for 'center' nut types, like a machine bolt, the strings takes off from the middle of the nut.
+        """
+        self.add_marker("Arrow")
+        line_length = self.current_layer.unittouu("0.3 in")
         line_position = self.page_margin_uu + self.nut_offset_uu
+        # add 2 to the x position of the line end to account for the arrow marker
         nut_indicator_line = self.current_layer.add(
             inkex.Line.new(
                 f"{self.page_margin_uu+self.template_width_uu + line_length},{line_position}",
-                f"{self.page_margin_uu+self.template_width_uu},{line_position}",
+                f"{self.page_margin_uu+self.template_width_uu+2},{line_position}",
             )
         )
         nut_indicator_line.style["stroke"] = "#000000"
         nut_indicator_line.style["stroke-width"] = f"{self.fret_slot_width_uu}"
+        nut_indicator_line.set("marker-end", "url(#Arrow)")
 
     def draw_template_border(self):
         count = 0
