@@ -104,6 +104,7 @@ class FrettyScalarino(inkex.EffectExtension):
         marker.set("refY", "1.5")
         marker.set("style", "overflow:visible")
         marker.set("inkscape:stockid", name)
+        marker.set("fill", "#6b6b6b")
         self.svg.defs.append(marker)
 
         arrow = inkex.PathElement(d="M 0.0,0.0 L 4.0,1.5 L 0.0,3.0")
@@ -189,6 +190,12 @@ class FrettyScalarino(inkex.EffectExtension):
                     )
                     self.draw_fret_marker(fret, self.columns, marker_distance)
 
+            if fret == 1:
+                self.draw_scale_text(
+                    fret_distance_from_page_top_uu
+                    - (fret_distance_from_previous_fret_uu / 2)
+                )
+
             # Store the position of the final fret to make drawing the borders of the fretboard easier
             if fret == fret_number:
                 self.final_fret_position_uu = fret_distance_from_page_top_uu
@@ -265,10 +272,11 @@ class FrettyScalarino(inkex.EffectExtension):
         nut_line.style["stroke"] = "#000000"
         nut_line.style["stroke-width"] = f"{self.nut_length_uu}"
 
+    def draw_scale_text(self, distance):
         self.current_layer.add(
             self.add_text(
                 self.page_margin_uu + self.template_width_uu / 2,
-                self.nut_position_uu + 6,
+                distance,
                 10,
                 f'Scale: {self.scale_length_inches}"',
             )
@@ -279,18 +287,29 @@ class FrettyScalarino(inkex.EffectExtension):
         takeoff is at the bottom, but for 'center' nut types, like a machine bolt, the strings takes off from the middle of the nut.
         """
         self.add_marker("Arrow")
-        line_length = self.current_layer.unittouu("0.3 in")
+        line_length = self.template_width_uu / 4
         line_position = self.page_margin_uu + self.nut_offset_uu
+
         # add 2 to the x position of the line end to account for the arrow marker
-        nut_indicator_line = self.current_layer.add(
+        nut_indicator_line_l = self.current_layer.add(
             inkex.Line.new(
-                f"{self.page_margin_uu+self.template_width_uu + line_length},{line_position}",
-                f"{self.page_margin_uu+self.template_width_uu+2},{line_position}",
+                f"{self.page_margin_uu + line_length},{line_position}",
+                f"{self.page_margin_uu+2},{line_position}",
             )
         )
-        nut_indicator_line.style["stroke"] = "#000000"
-        nut_indicator_line.style["stroke-width"] = f"{self.fret_slot_width_uu}"
-        nut_indicator_line.set("marker-end", "url(#Arrow)")
+        nut_indicator_line_l.style["stroke"] = "#6b6b6b"
+        nut_indicator_line_l.style["stroke-width"] = f"{self.fret_slot_width_uu}"
+        nut_indicator_line_l.set("marker-end", "url(#Arrow)")
+
+        nut_indicator_line_r = self.current_layer.add(
+            inkex.Line.new(
+                f"{self.page_margin_uu + self.template_width_uu - line_length},{line_position}",
+                f"{self.page_margin_uu + self.template_width_uu-2},{line_position}",
+            )
+        )
+        nut_indicator_line_r.style["stroke"] = "#6b6b6b"
+        nut_indicator_line_r.style["stroke-width"] = f"{self.fret_slot_width_uu}"
+        nut_indicator_line_r.set("marker-end", "url(#Arrow)")
 
     def draw_template_border(self):
         count = 0
@@ -315,9 +334,7 @@ class FrettyScalarino(inkex.EffectExtension):
                 )
             )
             fretboard_border_left.style["stroke"] = "#000000"
-            fretboard_border_left.style[
-                "stroke-width"
-            ] = f"{self.fret_slot_width_uu * 2}"
+            fretboard_border_left.style["stroke-width"] = f"{self.fret_slot_width_uu}"
 
             fretboard_border_right = self.current_layer.add(
                 inkex.Line.new(
@@ -326,9 +343,7 @@ class FrettyScalarino(inkex.EffectExtension):
                 )
             )
             fretboard_border_right.style["stroke"] = "#000000"
-            fretboard_border_right.style[
-                "stroke-width"
-            ] = f"{self.fret_slot_width_uu * 2}"
+            fretboard_border_right.style["stroke-width"] = f"{self.fret_slot_width_uu}"
 
             count = count + 1
 
