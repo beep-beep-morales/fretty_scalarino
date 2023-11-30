@@ -9,5 +9,5 @@ Currently all the units available to the user are in inches. Not sure if it make
 Todo:
 
 1. Verify accuracy of fret calculations and placement.
-2. Cool logo?
-3. Designate nut position with markers?
+2. Additional registration markers?
+3. Extend to bridge?
