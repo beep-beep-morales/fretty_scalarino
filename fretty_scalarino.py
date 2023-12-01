@@ -38,7 +38,8 @@ class FrettyScalarino(inkex.EffectExtension):
         pars.add_argument("--fret_markers", default="true")
 
     def assign_variables(self):
-        """Assigns the variables parsed from the INX file to instance variables"""
+        """Assigns the variables parsed from the INX file to instance variables.
+        Variables that end in _uu are in Inkscape 'user units'."""
         self.current_layer = self.svg.get_current_layer()
 
         self.template_width_inches = self.options.template_width
@@ -95,8 +96,8 @@ class FrettyScalarino(inkex.EffectExtension):
         self.document_height_usable = self.document_height_uu - self.page_margin_uu * 2
 
     def add_marker(self, name):
-        """Create a marker and add it to the 'defs' of the svg
-        This function is based on code from 'dimensions.py"""
+        """Create a marker and add it to the 'defs' of the svg document.
+        This function is based on code from 'dimensions.py'."""
         marker = inkex.Marker()
         marker.set("id", name)
         marker.set("orient", "auto")
@@ -125,7 +126,7 @@ class FrettyScalarino(inkex.EffectExtension):
         return element
 
     def fret_distance_from_nut(self, fret):
-        """Calculate the distance from the guitar nut in inches for a given fret number, based on the scale length parameter.
+        """Calculate the distance from the guitar nut in inches for a given fret number, based on the scale length.
         Does not account for the length of the nut, or if the distance is calculated from the center of the nut or the leading edge.
         """
         return self.scale_length_inches - self.scale_length_inches / pow(
@@ -133,6 +134,8 @@ class FrettyScalarino(inkex.EffectExtension):
         )
 
     def sort_and_draw_frets(self, fret_number):
+        """Figure out where the frets should be placed on the page, taking into account
+        that there are overlapping columns. The page margins must be respected."""
         fret_list = list(range(1, fret_number + 1))
         offset = 0
         self.columns = 0
@@ -167,8 +170,9 @@ class FrettyScalarino(inkex.EffectExtension):
                 reset_page_top = False
             else:
                 pass
-                # fret_distance_from_page_top = fret_distance_from_page_top + fret_distance_from_previous_fret
 
+            # If the fret distance goes beyond the limit, add the current fret and the previous fret
+            # back to the list of frets, increment the column count, and add to the offset
             if fret_distance_from_page_top_inches > limit_inches:
                 offset = offset + limit_inches
                 fret_list.insert(0, fret)
@@ -283,7 +287,7 @@ class FrettyScalarino(inkex.EffectExtension):
         )
 
     def draw_nut_indicator(self):
-        """The nut indicator is an arrow that points to where the string takoff is. For leading edge nuts the string
+        """The nut indicator is an arrow that points to where the string takoff is. For normal leading edge nuts the string
         takeoff is at the bottom, but for 'center' nut types, like a machine bolt, the strings takes off from the middle of the nut.
         """
         self.add_marker("Arrow")
