@@ -258,7 +258,7 @@ class FrettyScalarino(inkex.EffectExtension):
         y = distance
         if distance > self.page_margin_uu:
             if fret in [12, 24]:
-                marker_offset = self.template_width_uu / 4
+                marker_offset = self.template_width_uu / 5
                 self.draw_cross(x - marker_offset, y)
                 self.draw_cross(x + marker_offset, y)
             else:
